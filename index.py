@@ -26,7 +26,7 @@ class MyStreamListener(tweepy.StreamListener):
             try:
                 tweet.favorite()
             except Exception as e:
-                print("Error on fav")
+                print("Error: " + str(e))
 
         # Retweet the tweet and send message
         if not tweet.retweeted:
@@ -37,7 +37,7 @@ class MyStreamListener(tweepy.StreamListener):
                 api.update_status(status=replyContent, in_reply_to_status_id=tweetInfo['id'],
                                   auto_populate_reply_metadata=True)
             except Exception as e:
-                print("Error or tweet has already been retweeted")
+                print("Error: " + str(e))
     def on_error(self, status):
         print("Error detected: " + str(status))
 
@@ -51,4 +51,4 @@ api = tweepy.API(auth, wait_on_rate_limit=True,
     wait_on_rate_limit_notify=True)
 tweets_listener = MyStreamListener(api)
 stream = tweepy.Stream(api.auth, tweets_listener)
-stream.filter(track=["What's my profile status?","Whats my profile status?"], languages=["en"],is_async=True)
+stream.filter(track=["What's my profile status?","Whats my profile status?","What's my profile status","Whats my profile status"], languages=["en"],is_async=True)
