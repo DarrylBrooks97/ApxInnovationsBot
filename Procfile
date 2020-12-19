@@ -1,1 +1,1 @@
-web: python index.py
+web: python3 index.py
