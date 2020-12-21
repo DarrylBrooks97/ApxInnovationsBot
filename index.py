@@ -39,7 +39,9 @@ class MyStreamListener(tweepy.StreamListener):
             except Exception as e:
                 print("Error: " + str(e))
     def on_error(self, status):
-        print("Error detected: " + str(status))
+        if status == 420:
+            print("Error detected: " + str(status) + "\nClosing reconnecting Stream...")
+            return False
 
 
 # Authenticate to Twitter
@@ -51,4 +53,4 @@ api = tweepy.API(auth, wait_on_rate_limit=True,
     wait_on_rate_limit_notify=True)
 tweets_listener = MyStreamListener(api)
 stream = tweepy.Stream(api.auth, tweets_listener)
-stream.filter(track=["#Whatsmyprofilestats","#Whatsmyprofilestatus","#darrylsbot"], languages=["en"],is_async=True)
+stream.filter(track=["#Whatsmyprofilestats","#Whatsmyprofilestatus"], languages=["en"],is_async=True)
