@@ -1,5 +1,6 @@
 import json
 import tweepy
+from time import *
 from os import environ
 
 APIKEY = environ['Consumer_Key']
@@ -14,34 +15,26 @@ class MyStreamListener(tweepy.StreamListener):
 
     def on_status(self, tweet):
         tweetInfo = json.loads(json.dumps(tweet._json))
-        # User's tweet contents
-        replyContent = "Hey " + str(tweetInfo['user']['screen_name']) + " thanks for asking!\n\nHere's your account info:\n\n" +\
-                       "Verified : " + str(tweetInfo['user']['verified']) + "\n" + \
-                       "Number of account likes : " + str(tweetInfo['user']['favourites_count']) + "\n" + \
-                       "Number of tweets : " + str(tweetInfo['user']['statuses_count']) + "\n"
+
+        # Guard clause for retweets of original tweet
+        if 'retweeted_status' in tweetInfo or 'quoted_status_permalink' in tweetInfo:
+            return
 
         # Like the tweet
         if not tweet.favorited:
-            # Mark it as Liked, since we have not done it yet
             try:
                 tweet.favorite()
             except Exception as e:
                 print("Error: " + str(e))
 
-        # Retweet the tweet and send message
-        if not tweet.retweeted:
-            # Retweet, since we have not retweeted it yet
-            try:
-                tweet.retweet()
-                # Reply to the tweet
-                api.update_status(status=replyContent, in_reply_to_status_id=tweetInfo['id'],
-                                  auto_populate_reply_metadata=True)
-            except Exception as e:
-                print("Error: " + str(e))
     def on_error(self, status):
         if status == 420:
-            print("Error detected: " + str(status) + "\nClosing reconnecting Stream...")
+            print("Error detected: " + str(status) + "\nClosing and reconnecting the Stream...")
+            # Wait 15 min before reconnecting
+            sleep(900)
             return False
+        else:
+            print("Error detected: " + str(status))
 
 
 # Authenticate to Twitter
@@ -53,4 +46,4 @@ api = tweepy.API(auth, wait_on_rate_limit=True,
     wait_on_rate_limit_notify=True)
 tweets_listener = MyStreamListener(api)
 stream = tweepy.Stream(api.auth, tweets_listener)
-stream.filter(track=["#Whatsmyprofilestats","#Whatsmyprofilestatus"], languages=["en"],is_async=True)
+stream.filter(track=["#blackownedbusiness","blackexcellence","who creates websites?","can someone create my website"],is_async=True)
