@@ -19,13 +19,34 @@ class MyStreamListener(tweepy.StreamListener):
         # Guard clause for retweets of original tweet
         if 'retweeted_status' in tweetInfo or 'quoted_status_permalink' in tweetInfo:
             return
+        
+        # Guard clause for possibly sensitive tweets
+        if 'possibly_sensitive' in tweetInfo and tweetInfo['possibly_sensitive']:
+            return
+        
+        # Guard clause for tweets with more than 5 hashtags
+        if len(tweetInfo['entities']['hashtags']) > 5:
+            print("Tweet with more than 5 hashtags detected. Ignoring...")
+            return
+
+        # Guard clause for extended tweets with more than 5 hashtags
+        if 'extended_tweet' in tweetInfo and len(tweetInfo['extended_tweet']['entities']['hashtags']) > 5:
+            print("Extended tweet with more than 5 hashtags detected. Ignoring...")
+            return
 
         # Like the tweet
         if not tweet.favorited:
             try:
                 tweet.favorite()
             except Exception as e:
-                print("Error: " + str(e))
+                print("Error liking tweet because: " + str(e))
+
+        # Retweet the tweet
+        if not tweet.retweeted:
+            try:
+                tweet.retweet()
+            except Exception as e:
+                print("Error retweeting tweet because: " + str(e))
 
     def on_error(self, status):
         if status == 420:
@@ -46,4 +67,4 @@ api = tweepy.API(auth, wait_on_rate_limit=True,
     wait_on_rate_limit_notify=True)
 tweets_listener = MyStreamListener(api)
 stream = tweepy.Stream(api.auth, tweets_listener)
-stream.filter(track=["#blackownedbusiness","blackexcellence","who creates websites?","can someone create my website"],is_async=True)
+stream.filter(track=["#crypto","#nft","#web3"],is_async=True)
