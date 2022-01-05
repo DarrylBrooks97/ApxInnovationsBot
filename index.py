@@ -38,6 +38,7 @@ class MyStreamListener(tweepy.StreamListener):
         if not tweet.favorited:
             try:
                 tweet.favorite()
+                sleep(12)
             except Exception as e:
                 print("Error liking tweet because: " + str(e))
 
