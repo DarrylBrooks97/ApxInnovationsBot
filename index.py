@@ -41,13 +41,6 @@ class MyStreamListener(tweepy.StreamListener):
             except Exception as e:
                 print("Error liking tweet because: " + str(e))
 
-        # Retweet the tweet
-        if not tweet.retweeted:
-            try:
-                tweet.retweet()
-            except Exception as e:
-                print("Error retweeting tweet because: " + str(e))
-
     def on_error(self, status):
         if status == 420:
             print("Error detected: " + str(status) + "\nClosing and reconnecting the Stream...")
